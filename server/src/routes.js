@@ -5,6 +5,11 @@ import { store } from './store.js';
 import { createToken, requireAuth } from './auth.js';
 
 const router = express.Router();
+// Express 4 doesn't forward rejected promises from async handlers, so pass them to the error handler.
+for (const method of ['get','post','put','patch','delete']) {
+  const register = router[method].bind(router);
+  router[method] = (path, ...handlers) => register(path, ...handlers.map(h => (req,res,next) => Promise.resolve(h(req,res,next)).catch(next)));
+}
 
 async function sendOwnerSms({ name, phone, message }) {
   const sid = process.env.TWILIO_ACCOUNT_SID, token = process.env.TWILIO_AUTH_TOKEN, from = process.env.TWILIO_FROM_NUMBER;

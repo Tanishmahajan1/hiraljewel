@@ -10,7 +10,7 @@ export const api = {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(data.message || 'Request failed');
+      throw new Error(data.message || `Request failed (${response.status})`);
     }
     return data;
   }
