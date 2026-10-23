@@ -35,7 +35,21 @@ async function getAIBRates() {
   if(!gold || !silver) throw new Error('Could not parse AIB Gold/Silver independently');
   return { gold:{inrPer10g:Math.round(gold)}, silver:{inrPerKg:Math.round(silver)}, rateDate:new Date().toLocaleDateString('en-IN'), source:'All India Bullion · India-wide reference', note:'Gold 999 per 10g and Silver 999 per kg. Reference rates exclude GST, making charges and wastage.' };
 }
-router.get('/market/prices', async (_req,res)=>{ if(marketCache.data&&Date.now()<marketCache.expiresAt)return res.json(marketCache.data); try{const data=await getAIBRates(); marketCache={data,expiresAt:Date.now()+60000}; res.json(data);}catch(e){console.error(e);res.status(503).json({message:'All India Bullion rates are temporarily unavailable'});} });
+// IBJA publishes the India benchmark rates in plain HTML; used when All India Bullion blocks server requests.
+async function getIBJARates() {
+  const response=await fetch('https://ibjarates.com/',{headers:{'User-Agent':'Mozilla/5.0 (compatible; Hiral-Jewels/1.1)'}});
+  if(!response.ok) throw new Error(`IBJA returned ${response.status}`);
+  const html=await response.text();
+  const pick = id => { const m=html.match(new RegExp(`id="${id}"[^>]*>([^<]*)<`)); return parseMoney(m?.[1]); };
+  const gold=pick('lblGold999_PM')||pick('lblGold999_AM'), silver=pick('lblSilver999_PM')||pick('lblSilver999_AM');
+  if(!gold || !silver) throw new Error('Could not parse IBJA Gold/Silver');
+  return { gold:{inrPer10g:Math.round(gold)}, silver:{inrPerKg:Math.round(silver)}, rateDate:new Date().toLocaleDateString('en-IN',{timeZone:'Asia/Kolkata'}), source:'IBJA · India benchmark reference', note:'Gold 999 per 10g and Silver 999 per kg. Reference rates exclude GST, making charges and wastage.' };
+}
+async function getMarketRates() {
+  try { return await getAIBRates(); }
+  catch(e) { console.warn('All India Bullion unavailable, using IBJA', e.message); return getIBJARates(); }
+}
+router.get('/market/prices', async (_req,res)=>{ if(marketCache.data&&Date.now()<marketCache.expiresAt)return res.json(marketCache.data); try{const data=await getMarketRates(); marketCache={data,expiresAt:Date.now()+5*60000}; res.json(data);}catch(e){console.error(e);res.status(503).json({message:'Gold and silver rates are temporarily unavailable'});} });
 
 router.post('/auth/login', async (req,res)=>{ const {username,password}=req.body||{}; const admin=await store.findAdmin(username); if(!admin||!bcrypt.compareSync(password||'',admin.password_hash))return res.status(401).json({message:'Invalid username or password'}); res.json({token:createToken(admin),admin:{id:admin.id,username:admin.username}}); });
 router.get('/auth/me',requireAuth,(req,res)=>res.json({admin:req.admin}));
