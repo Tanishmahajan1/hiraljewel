@@ -160,6 +160,7 @@ function Storefront() {
           <Link to="/contact" onClick={closeMenu}>Contact</Link>
           <Link to="/admin" onClick={closeMenu}>Admin</Link>
           <Link to="/bag" onClick={closeMenu}>Bag</Link>
+          <div className="mobile-menu-extras"><MetalTicker /><SocialIcons compact /></div>
         </nav>
         <div className="header-right"><SocialIcons compact /><MetalTicker /><BagLink /></div>
         <button className={`mobile-menu-toggle${menuOpen ? ' is-open' : ''}`} type="button" aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'} aria-expanded={menuOpen} onClick={() => setMenuOpen(v => !v)}>
@@ -499,6 +500,7 @@ function PageHeader() {
         <Link to="/about" onClick={closeMenu}>Our Story</Link>
         <Link to="/contact" onClick={closeMenu}>Contact</Link>
         <Link to="/admin" onClick={closeMenu}>Admin</Link>
+        <div className="mobile-menu-extras"><MetalTicker /><SocialIcons compact /></div>
       </nav>
       <div className="header-right"><SocialIcons compact /><MetalTicker /><BagLink /></div>
       <button className={`mobile-menu-toggle${menuOpen ? ' is-open' : ''}`} type="button" aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'} aria-expanded={menuOpen} onClick={() => setMenuOpen(v => !v)}>
