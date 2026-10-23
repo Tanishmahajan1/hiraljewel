@@ -647,6 +647,7 @@ function BagPage() {
   const [customer, setCustomer] = useState({ name: '', phone: '', email: '', message: '' });
   const [status, setStatus] = useState('');
   const [sending, setSending] = useState(false);
+  const [mailto, setMailto] = useState('');
 
   useEffect(() => {
     const update = () => setBag(getBag());
@@ -657,16 +658,31 @@ function BagPage() {
   async function sendBagEmail(e) {
     e.preventDefault();
     if (!bag.length) return;
-    setSending(true); setStatus('');
+    setSending(true); setStatus(''); setMailto('');
+    // Netlify Forms emails every submission to Hiral Jewels (no SMTP needed).
+    const products = bag.map(i => `• ${i.name} × ${Number(i.quantity || 1)} | ${i.category || ''} | ${i.material || ''} | ${i.stone || ''}`).join('\n');
+    const formSent = fetch('/__forms.html', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        'form-name': 'bag-enquiry',
+        subject: `Hiral Jewels Bag Enquiry — ${customer.name}`,
+        name: customer.name, phone: customer.phone, email: customer.email,
+        products, message: customer.message || 'No additional message'
+      }).toString()
+    }).then(r => r.ok).catch(() => false);
     try {
       const data = await api.request('/api/orders/email', {
         method: 'POST',
         body: JSON.stringify({ customer, items: bag })
       });
       setStatus(data.message || 'Your bag enquiry has been sent.');
+      if (data.emailSent === false && data.mailto && !(await formSent)) setMailto(data.mailto);
     } catch (err) {
+      if (await formSent) { setStatus('Thank you! Your bag enquiry has been sent to Hiral Jewels. We will contact you soon.'); return; }
       console.error('Bag email failed:', err);
       setStatus(err.message || 'Could not send the bag email. Please try again.');
+      if (err.data?.mailto) setMailto(err.data.mailto);
     } finally { setSending(false); }
   }
 
@@ -699,6 +715,7 @@ function BagPage() {
               <label>Your Email<input type="email" value={customer.email} onChange={e => setCustomer({ ...customer, email: e.target.value })} /></label>
               <label>Message<textarea value={customer.message} onChange={e => setCustomer({ ...customer, message: e.target.value })} placeholder="Any size, customization or delivery questions?" /></label>
               {status && <div className="success">{status}</div>}
+              {mailto && <a className="outline-btn" href={mailto}>Also send from your email app ↗</a>}
               <button className="gold-btn" disabled={sending}>{sending ? 'Sending…' : 'Send Bag by Email ↗'}</button>
               <button type="button" className="whatsapp-btn" onClick={() => whatsappInquiry({ name: `Bag enquiry (${totalItems} items)` })}>Send Bag on WhatsApp ↗</button>
             </form>
@@ -998,7 +1015,7 @@ function AdminDashboard() {
           {enquiries.length === 0 ? <p className="muted">No enquiries yet.</p> : enquiries.map(item => (
             <div className="enquiry" key={item.id}>
               <div><b>{item.name}</b><span>{item.phone} · {item.email}</span></div>
-              <p>{item.message}</p>
+              <p style={{ whiteSpace: 'pre-line' }}>{item.message}</p>
               <select value={item.status} onChange={e => updateStatus(item.id, e.target.value)}>
                 <option value="new">New</option>
                 <option value="contacted">Contacted</option>
