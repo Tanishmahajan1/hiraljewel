@@ -3,7 +3,7 @@
 ## Stack
 - Frontend: React 18 + Vite + React Router
 - Backend: Node.js + Express
-- Database: SQLite
+- Database: Netlify Database (Postgres, via Drizzle ORM)
 - Authentication: JWT + bcrypt
 - Product CRUD: Add / Edit / Delete
 - Admin dashboard
@@ -38,8 +38,7 @@ npm run server
 npm run client
 ```
 
-The SQLite database is created automatically in:
-`server/data/hiral-jewels.sqlite`
+Data is stored in Netlify Database. Run the app locally with `netlify dev` so the API can reach the database. Schema lives in `db/schema.ts`; after changing it, run `npx drizzle-kit generate --name <change>` to create a migration (Netlify applies it on deploy).
 
 ## Production notes
 Set `JWT_SECRET` in the server environment and replace the demo admin credentials.

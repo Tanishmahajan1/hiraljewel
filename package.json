@@ -10,13 +10,16 @@
     "build": "npm --prefix server install && npm --prefix client install --include=dev && npm --prefix client run build"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "drizzle-kit": "^1.0.0-beta.22"
   },
   "dependencies": {
     "@netlify/blobs": "^8.1.0",
+    "@netlify/database": "^1.1.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
+    "drizzle-orm": "^1.0.0-beta.22",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.10.0",
