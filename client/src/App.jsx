@@ -109,7 +109,7 @@ function MetalTicker() {
     <div className="metal-ticker" aria-label="All India Bullion gold and silver rates">
       <div><span>24K GOLD · 999</span><b>{loading ? 'Loading…' : prices ? `${money(prices.gold.inrPer10g)} / 10g` : '—'}</b></div>
       <div><span>SILVER · 999</span><b>{loading ? 'Loading…' : prices ? `${money(prices.silver.inrPerKg)} / kg` : '—'}</b></div>
-      {prices?.rateDate ? <small>{prices.source} · {prices.rateDate}</small> : <small>All India Bullion reference</small>}
+      {prices?.rateDate ? <small>{prices.source} · {prices.rateDate}</small> : <small>India bullion reference</small>}
     </div>
   );
 }
@@ -160,7 +160,7 @@ function Storefront() {
           <Link to="/contact" onClick={closeMenu}>Contact</Link>
           <Link to="/admin" onClick={closeMenu}>Admin</Link>
           <Link to="/bag" onClick={closeMenu}>Bag</Link>
-          <div className="mobile-menu-extras"><MetalTicker /><SocialIcons compact /></div>
+          <div className="mobile-menu-extras"><SocialIcons compact /></div>
         </nav>
         <div className="header-right"><SocialIcons compact /><MetalTicker /><BagLink /></div>
         <button className={`mobile-menu-toggle${menuOpen ? ' is-open' : ''}`} type="button" aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'} aria-expanded={menuOpen} onClick={() => setMenuOpen(v => !v)}>
@@ -500,7 +500,8 @@ function PageHeader() {
         <Link to="/about" onClick={closeMenu}>Our Story</Link>
         <Link to="/contact" onClick={closeMenu}>Contact</Link>
         <Link to="/admin" onClick={closeMenu}>Admin</Link>
-        <div className="mobile-menu-extras"><MetalTicker /><SocialIcons compact /></div>
+        <Link to="/bag" onClick={closeMenu}>Bag</Link>
+        <div className="mobile-menu-extras"><SocialIcons compact /></div>
       </nav>
       <div className="header-right"><SocialIcons compact /><MetalTicker /><BagLink /></div>
       <button className={`mobile-menu-toggle${menuOpen ? ' is-open' : ''}`} type="button" aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'} aria-expanded={menuOpen} onClick={() => setMenuOpen(v => !v)}>

@@ -2443,8 +2443,11 @@ body { background: radial-gradient(circle at 75% -10%, rgba(201,162,74,.10), tra
     grid-template-rows: auto;
     position: sticky;
   }
-  .header-right { grid-column: 2; }
-  .header-right .social-icons, .header-right .metal-ticker { display: none !important; }
+  /* Rates get their own full-width row; Bag lives inside the hamburger menu. */
+  .site-header .header-right { grid-column: 1 / -1; grid-row: 2; padding-right: 0; justify-content: center; padding-bottom: 8px; }
+  .header-right .social-icons, .header-right .bag { display: none !important; }
+  .header-right .metal-ticker { display: grid !important; width: 100%; min-width: 0; grid-template-columns: 1fr 1fr; }
+  .header-right .metal-ticker small { grid-column: 1 / -1; }
 
   .mobile-menu-toggle {
     grid-column: 3;
@@ -2502,7 +2505,6 @@ body { background: radial-gradient(circle at 75% -10%, rgba(201,162,74,.10), tra
     gap: 14px;
     padding-top: 16px;
   }
-  .site-header nav .mobile-menu-extras .metal-ticker { display: flex !important; flex-wrap: wrap; }
   .site-header nav .mobile-menu-extras .social-icons { display: flex !important; gap: 10px; }
   .site-header nav .mobile-menu-extras a { border-bottom: 0; padding: 0; }
 }
